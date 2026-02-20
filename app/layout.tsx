@@ -8,7 +8,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Tazminur | Full Stack Web Developer",
+  title: {
+    default: "Tazminur Rahman Tanim | Full Stack Web Developer",
+    template: "%s | Tazminur Rahman Tanim",
+  },
   description:
     "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies. Building performant, scalable web applications with clean code.",
   keywords: [
@@ -19,11 +22,11 @@ export const metadata: Metadata = {
     "Node.js",
     "TypeScript",
     "Portfolio",
-    "Tazminur",
+    "Tazminur Rahman Tanim",
   ],
-  authors: [{ name: "Tazminur" }],
+  authors: [{ name: "Tazminur Rahman Tanim" }],
   openGraph: {
-    title: "Tazminur | Full Stack Web Developer",
+    title: "Tazminur Rahman Tanim | Full Stack Web Developer",
     description:
       "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
     type: "website",
@@ -31,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tazminur | Full Stack Web Developer",
+    title: "Tazminur Rahman Tanim | Full Stack Web Developer",
     description:
       "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
   },

@@ -1,119 +1,283 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { HiArrowRight, HiMail } from "react-icons/hi";
-import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { HiArrowRight, HiMail, HiDownload } from "react-icons/hi";
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+
+const roles = [
+  "Full Stack Web Developer",
+  "MERN Stack Developer",
+  "Founder & CEO, Algowave",
+  "Next.js Specialist",
+];
+
+function TypeWriter({ words }: { words: string[] }) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState("");
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const current = words[index];
+    const speed = deleting ? 40 : 80;
+
+    if (!deleting && text === current) {
+      const pause = setTimeout(() => setDeleting(true), 2000);
+      return () => clearTimeout(pause);
+    }
+
+    if (deleting && text === "") {
+      setDeleting(false);
+      setIndex((prev) => (prev + 1) % words.length);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setText(
+        deleting ? current.slice(0, text.length - 1) : current.slice(0, text.length + 1)
+      );
+    }, speed);
+
+    return () => clearTimeout(timer);
+  }, [text, deleting, index, words]);
+
+  return (
+    <span className="gradient-text">
+      {text}
+      <span className="animate-pulse text-cyan-400">|</span>
+    </span>
+  );
+}
+
+const socials = [
+  { icon: FaGithub, href: "https://github.com", label: "GitHub" },
+  { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+  { icon: FaTwitter, href: "https://twitter.com", label: "Twitter" },
+];
+
+const stats = [
+  { value: "3+", label: "Years Exp." },
+  { value: "50+", label: "Projects" },
+  { value: "30+", label: "Clients" },
+];
 
 export default function Hero() {
   return (
     <section
       id="home"
-      className="relative flex min-h-screen items-center justify-center overflow-hidden px-4"
+      className="relative flex min-h-[calc(100vh-64px)] items-center overflow-hidden px-4 md:min-h-[calc(100vh-72px)]"
     >
-      {/* Background elements */}
+      {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/4 top-1/4 h-96 w-96 rounded-full bg-cyan-500/5 blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 h-96 w-96 rounded-full bg-purple-500/5 blur-3xl" />
+        <div className="absolute -left-20 top-20 h-[500px] w-[500px] rounded-full bg-cyan-500/[0.04] blur-[100px]" />
+        <div className="absolute -right-20 bottom-20 h-[500px] w-[500px] rounded-full bg-purple-500/[0.04] blur-[100px]" />
+        <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/[0.02] blur-[80px]" />
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-4xl text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="mb-6 inline-block rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-1.5 text-sm font-medium text-cyan-400">
-            Available for Freelance Work
-          </span>
-        </motion.div>
+      <div className="relative z-10 mx-auto w-full max-w-6xl">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left — Text content */}
+          <div className="order-2 text-center lg:order-1 lg:text-left">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-1.5"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+              </span>
+              <span className="text-sm font-medium text-cyan-400">
+                Available for Freelance Work
+              </span>
+            </motion.div>
 
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="mb-6 text-4xl font-bold leading-tight tracking-tight sm:text-6xl lg:text-7xl"
-        >
-          Hi, I&apos;m{" "}
-          <span className="gradient-text">Tazminur</span>
-          <br />
-          <span className="text-zinc-300">Full Stack Web Developer</span>
-        </motion.h1>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <p className="mb-2 text-base font-medium text-zinc-500 sm:text-lg">
+                Hello, I&apos;m
+              </p>
+              <h1 className="mb-3 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+                <span className="text-white">Tazminur Rahman</span>
+                <br />
+                <span className="text-white">Tanim</span>
+              </h1>
+            </motion.div>
 
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mx-auto mb-10 max-w-2xl text-lg text-zinc-400 sm:text-xl"
-        >
-          I build modern, performant web applications with clean code and
-          pixel-perfect design. Passionate about creating digital experiences
-          that make a difference.
-        </motion.p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mb-6 h-9 text-xl font-semibold sm:text-2xl"
+            >
+              <TypeWriter words={roles} />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="mb-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-        >
-          <a
-            href="#projects"
-            className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 px-8 py-3.5 font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/25"
-          >
-            View Projects
-            <HiArrowRight className="transition-transform group-hover:translate-x-1" />
-          </a>
-          <a
-            href="#contact"
-            className="glass glass-hover flex items-center gap-2 rounded-full px-8 py-3.5 font-medium text-white transition-all"
-          >
-            <HiMail size={18} />
-            Contact Me
-          </a>
-        </motion.div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-8 max-w-lg text-base leading-relaxed text-zinc-500 lg:mx-0 mx-auto"
+            >
+              I craft modern, high-performance web applications with clean
+              architecture and intuitive user experiences. Turning complex
+              problems into elegant digital solutions.
+            </motion.p>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="flex items-center justify-center gap-5"
-        >
-          <a
-            href="https://github.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-cyan-400"
-            aria-label="GitHub"
-          >
-            <FaGithub size={22} />
-          </a>
-          <a
-            href="https://linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-zinc-500 transition-colors hover:text-cyan-400"
-            aria-label="LinkedIn"
-          >
-            <FaLinkedin size={22} />
-          </a>
-        </motion.div>
+            {/* CTA buttons */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="mb-10 flex flex-col items-center gap-3 sm:flex-row lg:justify-start sm:justify-center"
+            >
+              <Link
+                href="/projects"
+                className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 px-7 py-3 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+              >
+                View Projects
+                <HiArrowRight
+                  size={16}
+                  className="transition-transform group-hover:translate-x-1"
+                />
+              </Link>
+              <Link
+                href="/contact"
+                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/[0.15] hover:text-white"
+              >
+                <HiMail size={16} />
+                Contact Me
+              </Link>
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/[0.15] hover:text-white"
+              >
+                <HiDownload size={16} />
+                Resume
+              </a>
+            </motion.div>
 
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        >
+            {/* Social + Stats row */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex flex-col items-center gap-6 sm:flex-row lg:justify-start sm:justify-center"
+            >
+              <div className="flex items-center gap-3">
+                {socials.map((social) => (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.02] text-zinc-500 transition-all hover:border-cyan-500/30 hover:text-cyan-400"
+                    aria-label={social.label}
+                  >
+                    <social.icon size={16} />
+                  </a>
+                ))}
+              </div>
+
+              <div className="h-6 w-px bg-white/[0.06] hidden sm:block" />
+
+              <div className="flex items-center gap-6">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <div className="text-lg font-bold text-white">
+                      {stat.value}
+                    </div>
+                    <div className="text-xs text-zinc-600">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right — Profile image */}
           <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-zinc-700 p-1"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="order-1 flex justify-center lg:order-2"
           >
-            <div className="h-2 w-1 rounded-full bg-cyan-400" />
+            <div className="relative">
+              {/* Glow ring behind image */}
+              <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
+
+              {/* Profile image container */}
+              <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/[0.06] sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
+                <Image
+                  src="/profile.jpg"
+                  alt="Tazminur Rahman Tanim"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
+                />
+                {/* Fallback gradient if image missing */}
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
+                  <span className="text-6xl font-bold text-white/[0.06] sm:text-7xl">
+                    TRT
+                  </span>
+                </div>
+              </div>
+
+              {/* Floating badge */}
+              <motion.div
+                animate={{ y: [0, -8, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -right-2 top-8 rounded-xl border border-white/[0.06] bg-[#111111]/90 px-3 py-2 backdrop-blur-md sm:-right-4"
+              >
+                <div className="text-xs font-semibold text-white">3+ Years</div>
+                <div className="text-[10px] text-zinc-500">Experience</div>
+              </motion.div>
+
+              <motion.div
+                animate={{ y: [0, 8, 0] }}
+                transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -left-2 bottom-12 rounded-xl border border-white/[0.06] bg-[#111111]/90 px-3 py-2 backdrop-blur-md sm:-left-4"
+              >
+                <div className="text-xs font-semibold text-white">50+ Projects</div>
+                <div className="text-[10px] text-zinc-500">Completed</div>
+              </motion.div>
+            </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2"
+      >
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="flex h-9 w-5 items-start justify-center rounded-full border border-zinc-800 p-1"
+        >
+          <div className="h-1.5 w-0.5 rounded-full bg-cyan-400" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
