@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -51,6 +51,26 @@ function TypeWriter({ words }: { words: string[] }) {
   );
 }
 
+function useProfilePicture() {
+  const [profileUrl, setProfileUrl] = useState<string>("");
+
+  const fetchPicture = useCallback(async () => {
+    try {
+      const res = await fetch("/api/settings/profile-picture");
+      const data = await res.json();
+      if (data.url) setProfileUrl(data.url);
+    } catch {
+      /* fallback to static */
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPicture();
+  }, [fetchPicture]);
+
+  return profileUrl;
+}
+
 const socials = [
   { icon: FaGithub, href: "https://github.com", label: "GitHub" },
   { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
@@ -64,6 +84,9 @@ const stats = [
 ];
 
 export default function Hero() {
+  const profileUrl = useProfilePicture();
+  const imgSrc = profileUrl || "/profile.jpg";
+
   return (
     <section
       id="home"
@@ -225,19 +248,20 @@ export default function Hero() {
               {/* Profile image container */}
               <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/[0.06] sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
                 <Image
-                  src="/profile.jpg"
+                  src={imgSrc}
                   alt="Tazminur Rahman Tanim"
                   fill
                   className="object-cover"
                   priority
                   sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
                 />
-                {/* Fallback gradient if image missing */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
-                  <span className="text-6xl font-bold text-white/[0.06] sm:text-7xl">
-                    TRT
-                  </span>
-                </div>
+                {!profileUrl && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
+                    <span className="text-6xl font-bold text-white/[0.06] sm:text-7xl">
+                      TRT
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Floating badge */}

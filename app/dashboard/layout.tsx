@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   HiHome,
@@ -15,11 +15,14 @@ import {
   HiArrowLeft,
   HiSearch,
   HiBell,
+  HiPhotograph,
+  HiLogout,
   HiCog,
 } from "react-icons/hi";
 
 const sidebarLinks = [
   { name: "Overview", href: "/dashboard", icon: HiHome },
+  { name: " Profile Picture", href: "/dashboard/picture", icon: HiPhotograph },
   { name: "Projects", href: "/dashboard/projects", icon: HiCollection },
   { name: "Certificates", href: "/dashboard/certificates", icon: HiBadgeCheck },
   { name: "Testimonials", href: "/dashboard/testimonials", icon: HiChat },
@@ -33,6 +36,17 @@ export default function DashboardLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  if (pathname === "/dashboard/login") {
+    return <>{children}</>;
+  }
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    router.push("/dashboard/login");
+    router.refresh();
+  };
 
   const currentPage =
     sidebarLinks.find(
@@ -44,10 +58,10 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-[#060606]">
       {/* --- Sidebar (desktop) --- */}
-      <aside className="hidden w-64 shrink-0 flex-col border-r border-white/[0.04] bg-[#0a0a0a] lg:flex">
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-white/4 bg-[#0a0a0a] lg:flex">
         {/* Brand */}
-        <div className="flex h-16 items-center gap-3 border-b border-white/[0.04] px-5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
+        <div className="flex h-16 items-center gap-3 border-b border-white/4 px-5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
             T
           </div>
           <div>
@@ -75,7 +89,7 @@ export default function DashboardLayout({
                 className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                   isActive
                     ? "bg-cyan-500/10 text-cyan-400"
-                    : "text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-300"
+                    : "text-zinc-500 hover:bg-white/3 hover:text-zinc-300"
                 }`}
               >
                 <link.icon
@@ -92,14 +106,21 @@ export default function DashboardLayout({
         </nav>
 
         {/* Bottom */}
-        <div className="border-t border-white/[0.04] p-3">
+        <div className="space-y-1 border-t border-white/4 p-3">
           <Link
             href="/"
-            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/[0.03] hover:text-white"
+            className="flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/3 hover:text-white"
           >
             <HiArrowLeft size={16} />
             Back to Site
           </Link>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400/70 transition-colors hover:bg-red-500/10 hover:text-red-400"
+          >
+            <HiLogout size={16} />
+            Logout
+          </button>
         </div>
       </aside>
 
@@ -119,18 +140,19 @@ export default function DashboardLayout({
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-white/[0.04] bg-[#0a0a0a] lg:hidden"
+              className="fixed left-0 top-0 z-50 flex h-full w-64 flex-col border-r border-white/4 bg-[#0a0a0a] lg:hidden"
             >
-              <div className="flex h-14 items-center justify-between border-b border-white/[0.04] px-4">
+              <div className="flex h-14 items-center justify-between border-b border-white/4 px-4">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
                     T
                   </div>
                   <span className="text-sm font-bold text-white">Dashboard</span>
                 </div>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-500"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/4 text-zinc-500"
+                  aria-label="Close sidebar"
                 >
                   <HiX size={14} />
                 </button>
@@ -148,7 +170,7 @@ export default function DashboardLayout({
                       className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all ${
                         isActive
                           ? "bg-cyan-500/10 text-cyan-400"
-                          : "text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-300"
+                          : "text-zinc-500 hover:bg-white/3 hover:text-zinc-300"
                       }`}
                     >
                       <link.icon size={18} />
@@ -157,7 +179,7 @@ export default function DashboardLayout({
                   );
                 })}
               </nav>
-              <div className="border-t border-white/[0.04] p-3">
+              <div className="space-y-1 border-t border-white/4 p-3">
                 <Link
                   href="/"
                   className="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-zinc-500 hover:text-white"
@@ -165,6 +187,13 @@ export default function DashboardLayout({
                   <HiArrowLeft size={16} />
                   Back to Site
                 </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm text-red-400/70 hover:bg-red-500/10 hover:text-red-400"
+                >
+                  <HiLogout size={16} />
+                  Logout
+                </button>
               </div>
             </motion.aside>
           </>
@@ -174,10 +203,11 @@ export default function DashboardLayout({
       {/* --- Main content --- */}
       <div className="flex flex-1 flex-col overflow-hidden">
         {/* Top bar */}
-        <header className="flex h-14 shrink-0 items-center gap-4 border-b border-white/[0.04] bg-[#0a0a0a]/60 px-4 backdrop-blur-md lg:h-16 lg:px-6">
+        <header className="flex h-14 shrink-0 items-center gap-4 border-b border-white/4 bg-[#0a0a0a]/60 px-4 backdrop-blur-md lg:h-16 lg:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] text-zinc-500 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 text-zinc-500 lg:hidden"
+            aria-label="Open sidebar"
           >
             <HiMenuAlt2 size={18} />
           </button>
@@ -185,7 +215,7 @@ export default function DashboardLayout({
           <h1 className="text-base font-semibold text-white">{currentPage}</h1>
 
           <div className="ml-auto flex items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 sm:flex">
+            <div className="hidden items-center gap-2 rounded-xl border border-white/6 bg-white/2 px-3 py-1.5 sm:flex">
               <HiSearch size={14} className="text-zinc-600" />
               <input
                 type="text"
@@ -193,14 +223,14 @@ export default function DashboardLayout({
                 className="w-40 border-0 bg-transparent text-sm text-zinc-300 outline-none placeholder:text-zinc-700"
               />
             </div>
-            <button className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] text-zinc-500 transition-colors hover:text-white">
+            <button className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 text-zinc-500 transition-colors hover:text-white" aria-label="Notifications">
               <HiBell size={16} />
               <span className="absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-cyan-500" />
             </button>
-            <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] text-zinc-500 transition-colors hover:text-white">
+            <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 text-zinc-500 transition-colors hover:text-white" aria-label="Settings">
               <HiCog size={16} />
             </button>
-            <div className="ml-1 flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
+            <div className="ml-1 flex h-9 w-9 items-center justify-center rounded-full bg-linear-to-br from-cyan-500 to-purple-600 text-xs font-bold text-white">
               T
             </div>
           </div>

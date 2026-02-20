@@ -106,7 +106,7 @@ export default function Navbar() {
             {/* Right side */}
             <div className="flex items-center gap-3">
               <a
-                href="/resume.pdf"
+                href="https://drive.google.com/file/d/1tF52nFZzYk5XOIrwqXKpi2Mecr_mKVAB/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hidden items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[13px] font-medium text-zinc-400 transition-all hover:border-white/[0.15] hover:text-white md:flex"
