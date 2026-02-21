@@ -54,16 +54,18 @@ function TypeWriter({ words }: { words: string[] }) {
 }
 
 function useProfilePicture() {
-  const [profileUrl, setProfileUrl] = useState<string>("");
+  const [profileUrl, setProfileUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/settings/profile-picture")
       .then((res) => res.json())
       .then((data) => {
-        if (!cancelled && data.url) setProfileUrl(data.url);
+        if (!cancelled) setProfileUrl(data.url || "");
       })
-      .catch(() => { /* fallback to static */ });
+      .catch(() => {
+        if (!cancelled) setProfileUrl("");
+      });
     return () => { cancelled = true; };
   }, []);
 
@@ -85,7 +87,8 @@ const stats = [
 
 export default function Hero() {
   const profileUrl = useProfilePicture();
-  const imgSrc = profileUrl || "/profile.jpg";
+  const isLoading = profileUrl === null;
+  const imgSrc = profileUrl || "";
 
   return (
     <section
@@ -247,15 +250,18 @@ export default function Hero() {
 
               {/* Profile image container */}
               <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/6 sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
-                <Image
-                  src={imgSrc}
-                  alt="Tazminur Rahman Tanim"
-                  fill
-                  className="object-cover"
-                  priority
-                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
-                />
-                {!profileUrl && (
+                {isLoading ? (
+                  <div className="absolute inset-0 animate-pulse bg-linear-to-br from-cyan-500/10 to-purple-500/10" />
+                ) : imgSrc ? (
+                  <Image
+                    src={imgSrc}
+                    alt="Tazminur Rahman Tanim"
+                    fill
+                    className="object-cover"
+                    priority
+                    sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
+                  />
+                ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10">
                     <span className="text-6xl font-bold text-white/6 sm:text-7xl">
                       TRT

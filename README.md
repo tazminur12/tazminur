@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tazminur Rahman Tanim — Portfolio
+
+A modern, full-stack portfolio website built with Next.js 16, featuring a public-facing site and a secure admin dashboard for managing all content dynamically.
+
+**Live:** [tazminur.me](https://tazminur.me)
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS v4
+- **Animations:** Framer Motion
+- **Database:** MongoDB with Mongoose
+- **Image Storage:** Cloudinary
+- **Authentication:** JWT (jose) with HTTP-only cookies
+- **Deployment:** Vercel
+
+## Features
+
+### Public Site
+- Responsive, animated hero with dynamic profile picture and typewriter effect
+- About, Skills, Projects, Certificates, Testimonials, and Contact pages
+- Project and certificate detail modals with accent-matched themes
+- Contact form that saves messages to the database
+- Open Graph metadata with dynamic profile image for social sharing
+- Fully responsive across all devices
+
+### Admin Dashboard (`/dashboard`)
+- Password-protected with JWT authentication and middleware route protection
+- **Projects CRUD** — Add, edit, delete projects with image upload, tech stack autocomplete suggestions, and priority ordering
+- **Certificates CRUD** — LinkedIn-style form with issue/expiration dates, credential ID, skill suggestions, and priority ordering
+- **Testimonials CRUD** — Manage client testimonials with status control
+- **Messages Inbox** — View, read, and delete contact form submissions
+- **Profile Picture** — Upload/manage the profile image (updates Hero, About, and OG image)
+- **Dashboard Overview** — Real-time stats and recent activity from all collections
+- SweetAlert2 notifications throughout
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- Cloudinary account
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Environment Variables
+
+Create a `.env` file in the root:
+
+```env
+MONGO_URI=your_mongodb_connection_string
+Cloudinary_API_SECRET=your_cloudinary_secret
+Cloudinary_API_KEY=your_cloudinary_key
+Cloudinary_CLOUD_NAME=your_cloud_name
+Clodinary_FOLDER=portfolio
+NEXT_PUBLIC_SITE_URL=https://your-domain.com
+ADMIN_EMAIL=your_admin_email
+ADMIN_PASSWORD=your_admin_password
+JWT_SECRET=your_jwt_secret
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Install & Run
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Open [http://localhost:3000](http://localhost:3000) for the public site and [http://localhost:3000/dashboard](http://localhost:3000/dashboard) for the admin panel.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── (site)/              # Public pages (home, about, skills, projects, etc.)
+├── dashboard/           # Admin dashboard pages
+├── api/                 # API routes (projects, certificates, testimonials, messages, auth, og)
+├── components/          # Shared components (Hero, Navbar, Footer, SectionHeading)
+├── layout.tsx           # Root layout with metadata & OG config
+lib/                     # MongoDB connection & Cloudinary utilities
+models/                  # Mongoose models (Project, Certificate, Testimonial, Message, SiteSettings)
+middleware.ts            # Dashboard route protection
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Deploy to Vercel and add all environment variables in the Vercel dashboard settings.
 
-## Deploy on Vercel
+```bash
+vercel --prod
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Author
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Tazminur Rahman Tanim**
+- GitHub: [tazminur12](https://github.com/tazminur12)
+- LinkedIn: [tazminur-rahman-tanim](https://www.linkedin.com/in/tazminur-rahman-tanim-305315336)
+- Facebook: [tan.im.921025](https://www.facebook.com/tan.im.921025)

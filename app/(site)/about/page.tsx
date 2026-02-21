@@ -57,20 +57,23 @@ const fadeUp = {
 };
 
 export default function About() {
-  const [profileUrl, setProfileUrl] = useState("");
+  const [profileUrl, setProfileUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     fetch("/api/settings/profile-picture")
       .then((res) => res.json())
       .then((data) => {
-        if (!cancelled && data.url) setProfileUrl(data.url);
+        if (!cancelled) setProfileUrl(data.url || "");
       })
-      .catch(() => {});
+      .catch(() => {
+        if (!cancelled) setProfileUrl("");
+      });
     return () => { cancelled = true; };
   }, []);
 
-  const imgSrc = profileUrl || "/profile.jpg";
+  const isLoading = profileUrl === null;
+  const imgSrc = profileUrl || "";
 
   return (
     <section id="about" className="relative px-4 py-20 lg:py-28">
@@ -83,7 +86,7 @@ export default function About() {
           transition={{ duration: 0.5 }}
           className="mb-20 text-center"
         >
-          <span className="mb-4 inline-block rounded-full border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-cyan-400">
+          <span className="mb-4 inline-block rounded-full border border-cyan-500/20 bg-cyan-500/6 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-cyan-400">
             About Me
           </span>
           <h2 className="mb-3 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl">
@@ -107,18 +110,21 @@ export default function About() {
             className="flex justify-center lg:col-span-2"
           >
             <div className="relative">
-              <div className="absolute -inset-3 rounded-2xl bg-gradient-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
-              <div className="relative h-72 w-72 overflow-hidden rounded-2xl border border-white/[0.06] sm:h-80 sm:w-80">
-                <Image
-                  src={imgSrc}
-                  alt="Tazminur Rahman Tanim"
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 640px) 288px, 320px"
-                />
-                {!profileUrl && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
-                    <span className="text-7xl font-bold text-white/[0.04]">
+              <div className="absolute -inset-3 rounded-2xl bg-linear-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
+              <div className="relative h-72 w-72 overflow-hidden rounded-2xl border border-white/6 sm:h-80 sm:w-80">
+                {isLoading ? (
+                  <div className="absolute inset-0 animate-pulse bg-linear-to-br from-cyan-500/10 to-purple-500/10" />
+                ) : imgSrc ? (
+                  <Image
+                    src={imgSrc}
+                    alt="Tazminur Rahman Tanim"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 640px) 288px, 320px"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10">
+                    <span className="text-7xl font-bold text-white/4">
                       TRT
                     </span>
                   </div>
@@ -129,10 +135,10 @@ export default function About() {
               <motion.div
                 animate={{ y: [0, -6, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -bottom-4 -right-4 rounded-xl border border-white/[0.06] bg-[#111]/90 px-4 py-2.5 backdrop-blur-md"
+                className="absolute -bottom-4 -right-4 rounded-xl border border-white/6 bg-[#111]/90 px-4 py-2.5 backdrop-blur-md"
               >
                 <div className="flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500 to-purple-600">
                     <HiCode size={16} className="text-white" />
                   </div>
                   <div>
@@ -187,7 +193,7 @@ export default function About() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/contact"
-                className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 px-6 py-2.5 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                className="group flex items-center gap-2 rounded-full bg-linear-to-r from-cyan-500 to-purple-600 px-6 py-2.5 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
               >
                 Let&apos;s Work Together
                 <HiArrowRight
@@ -199,7 +205,7 @@ export default function About() {
                 href="/resume.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-6 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:border-white/[0.15] hover:text-white"
+                className="flex items-center gap-2 rounded-full border border-white/8 bg-white/3 px-6 py-2.5 text-sm font-medium text-zinc-300 transition-all hover:border-white/15 hover:text-white"
               >
                 <HiDownload size={15} />
                 Download CV
@@ -221,8 +227,8 @@ export default function About() {
               whileHover={{ y: -4 }}
               className="glass glass-hover glow-hover group relative overflow-hidden rounded-2xl p-6 transition-all"
             >
-              <div className={`absolute -right-4 -top-4 h-20 w-20 rounded-full bg-gradient-to-br ${stat.color} opacity-[0.06] blur-2xl transition-opacity group-hover:opacity-[0.12]`} />
-              <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.color} bg-opacity-10`}>
+              <div className={`absolute -right-4 -top-4 h-20 w-20 rounded-full bg-linear-to-br ${stat.color} opacity-[0.06] blur-2xl transition-opacity group-hover:opacity-[0.12]`} />
+              <div className={`mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br ${stat.color} bg-opacity-10`}>
                 <stat.icon size={22} className="text-white" />
               </div>
               <div className="text-3xl font-bold text-white">{stat.value}</div>
@@ -247,7 +253,7 @@ export default function About() {
               My Professional Journey
             </h4>
 
-            <div className="relative space-y-8 pl-6 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-gradient-to-b before:from-cyan-500/40 before:to-purple-500/40">
+            <div className="relative space-y-8 pl-6 before:absolute before:left-0 before:top-2 before:h-[calc(100%-16px)] before:w-px before:bg-linear-to-b before:from-cyan-500/40 before:to-purple-500/40">
               {experience.map((exp, i) => (
                 <motion.div
                   key={exp.role}
@@ -319,7 +325,7 @@ export default function About() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-6 rounded-2xl border border-cyan-500/10 bg-cyan-500/[0.03] p-5"
+              className="mt-6 rounded-2xl border border-cyan-500/10 bg-cyan-500/3 p-5"
             >
               <p className="text-sm leading-relaxed text-zinc-400">
                 <span className="font-semibold text-cyan-400">Core Stack:</span>{" "}
