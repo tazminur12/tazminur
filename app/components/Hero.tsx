@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HiArrowRight, HiMail, HiDownload } from "react-icons/hi";
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaGithub, FaLinkedin, FaTwitter, FaFacebook } from "react-icons/fa";
 
 const roles = [
   "Full Stack Web Developer",
@@ -29,9 +29,11 @@ function TypeWriter({ words }: { words: string[] }) {
     }
 
     if (deleting && text === "") {
-      setDeleting(false);
-      setIndex((prev) => (prev + 1) % words.length);
-      return;
+      const next = setTimeout(() => {
+        setDeleting(false);
+        setIndex((prev) => (prev + 1) % words.length);
+      }, speed);
+      return () => clearTimeout(next);
     }
 
     const timer = setTimeout(() => {
@@ -54,27 +56,25 @@ function TypeWriter({ words }: { words: string[] }) {
 function useProfilePicture() {
   const [profileUrl, setProfileUrl] = useState<string>("");
 
-  const fetchPicture = useCallback(async () => {
-    try {
-      const res = await fetch("/api/settings/profile-picture");
-      const data = await res.json();
-      if (data.url) setProfileUrl(data.url);
-    } catch {
-      /* fallback to static */
-    }
-  }, []);
-
   useEffect(() => {
-    fetchPicture();
-  }, [fetchPicture]);
+    let cancelled = false;
+    fetch("/api/settings/profile-picture")
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && data.url) setProfileUrl(data.url);
+      })
+      .catch(() => { /* fallback to static */ });
+    return () => { cancelled = true; };
+  }, []);
 
   return profileUrl;
 }
 
 const socials = [
-  { icon: FaGithub, href: "https://github.com", label: "GitHub" },
-  { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+  { icon: FaGithub, href: "https://github.com/tazminur12", label: "GitHub" },
+  { icon: FaLinkedin, href: "https://www.linkedin.com/in/tazminur-rahman-tanim-305315336", label: "LinkedIn" },
   { icon: FaTwitter, href: "https://twitter.com", label: "Twitter" },
+  { icon: FaFacebook, href: "https://www.facebook.com/tan.im.921025", label: "Facebook" },
 ];
 
 const stats = [
@@ -94,9 +94,9 @@ export default function Hero() {
     >
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-20 top-20 h-[500px] w-[500px] rounded-full bg-cyan-500/[0.04] blur-[100px]" />
-        <div className="absolute -right-20 bottom-20 h-[500px] w-[500px] rounded-full bg-purple-500/[0.04] blur-[100px]" />
-        <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/[0.02] blur-[80px]" />
+        <div className="absolute -left-20 top-20 h-[500px] w-[500px] rounded-full bg-cyan-500/4 blur-[100px]" />
+        <div className="absolute -right-20 bottom-20 h-[500px] w-[500px] rounded-full bg-purple-500/4 blur-[100px]" />
+        <div className="absolute left-1/2 top-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/2 blur-[80px]" />
         {/* Grid pattern */}
         <div
           className="absolute inset-0 opacity-[0.03]"
@@ -116,7 +116,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/[0.06] px-4 py-1.5"
+              className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/6 px-4 py-1.5"
             >
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
@@ -171,7 +171,7 @@ export default function Hero() {
             >
               <Link
                 href="/projects"
-                className="group flex items-center gap-2 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 px-7 py-3 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                className="group flex items-center gap-2 rounded-full bg-linear-to-r from-cyan-500 to-purple-600 px-7 py-3 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
               >
                 View Projects
                 <HiArrowRight
@@ -181,16 +181,16 @@ export default function Hero() {
               </Link>
               <Link
                 href="/contact"
-                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/[0.15] hover:text-white"
+                className="flex items-center gap-2 rounded-full border border-white/8 bg-white/3 px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/15 hover:text-white"
               >
                 <HiMail size={16} />
                 Contact Me
               </Link>
               <a
-                href="/resume.pdf"
+                href="https://drive.google.com/file/d/1tF52nFZzYk5XOIrwqXKpi2Mecr_mKVAB/view"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/[0.15] hover:text-white"
+                className="flex items-center gap-2 rounded-full border border-white/8 bg-white/3 px-7 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/15 hover:text-white"
               >
                 <HiDownload size={16} />
                 Resume
@@ -211,7 +211,7 @@ export default function Hero() {
                     href={social.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.02] text-zinc-500 transition-all hover:border-cyan-500/30 hover:text-cyan-400"
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 bg-white/2 text-zinc-500 transition-all hover:border-cyan-500/30 hover:text-cyan-400"
                     aria-label={social.label}
                   >
                     <social.icon size={16} />
@@ -219,7 +219,7 @@ export default function Hero() {
                 ))}
               </div>
 
-              <div className="h-6 w-px bg-white/[0.06] hidden sm:block" />
+              <div className="hidden h-6 w-px bg-white/6 sm:block" />
 
               <div className="flex items-center gap-6">
                 {stats.map((stat) => (
@@ -243,10 +243,10 @@ export default function Hero() {
           >
             <div className="relative">
               {/* Glow ring behind image */}
-              <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
+              <div className="absolute -inset-4 rounded-full bg-linear-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
 
               {/* Profile image container */}
-              <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/[0.06] sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
+              <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/6 sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
                 <Image
                   src={imgSrc}
                   alt="Tazminur Rahman Tanim"
@@ -256,8 +256,8 @@ export default function Hero() {
                   sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
                 />
                 {!profileUrl && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-500/10 to-purple-500/10">
-                    <span className="text-6xl font-bold text-white/[0.06] sm:text-7xl">
+                  <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10">
+                    <span className="text-6xl font-bold text-white/6 sm:text-7xl">
                       TRT
                     </span>
                   </div>
@@ -268,7 +268,7 @@ export default function Hero() {
               <motion.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -right-2 top-8 rounded-xl border border-white/[0.06] bg-[#111111]/90 px-3 py-2 backdrop-blur-md sm:-right-4"
+                className="absolute -right-2 top-8 rounded-xl border border-white/6 bg-[#0e0e0e]/90 px-3 py-2 backdrop-blur-md sm:-right-4"
               >
                 <div className="text-xs font-semibold text-white">3+ Years</div>
                 <div className="text-[10px] text-zinc-500">Experience</div>
@@ -277,7 +277,7 @@ export default function Hero() {
               <motion.div
                 animate={{ y: [0, 8, 0] }}
                 transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute -left-2 bottom-12 rounded-xl border border-white/[0.06] bg-[#111111]/90 px-3 py-2 backdrop-blur-md sm:-left-4"
+                className="absolute -left-2 bottom-12 rounded-xl border border-white/6 bg-[#0e0e0e]/90 px-3 py-2 backdrop-blur-md sm:-left-4"
               >
                 <div className="text-xs font-semibold text-white">50+ Projects</div>
                 <div className="text-[10px] text-zinc-500">Completed</div>

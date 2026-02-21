@@ -23,10 +23,10 @@ const moreLinks = [
 ];
 
 const socials = [
-  { icon: FaGithub, href: "https://github.com", label: "GitHub" },
-  { icon: FaLinkedin, href: "https://linkedin.com", label: "LinkedIn" },
+  { icon: FaGithub, href: "https://github.com/tazminur12", label: "GitHub" },
+  { icon: FaLinkedin, href: "https://www.linkedin.com/in/tazminur-rahman-tanim-305315336", label: "LinkedIn" },
   { icon: FaTwitter, href: "https://twitter.com", label: "Twitter" },
-  { icon: FaFacebook, href: "https://facebook.com", label: "Facebook" },
+  { icon: FaFacebook, href: "https://www.facebook.com/tan.im.921025", label: "Facebook" },
 ];
 
 export default function Footer() {

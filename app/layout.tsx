@@ -7,7 +7,10 @@ const inter = Inter({
   variable: "--font-geist-sans",
 });
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tazminur.me";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Tazminur Rahman Tanim | Full Stack Web Developer",
     template: "%s | Tazminur Rahman Tanim",
@@ -25,10 +28,24 @@ export const metadata: Metadata = {
     "Tazminur Rahman Tanim",
   ],
   authors: [{ name: "Tazminur Rahman Tanim" }],
+  icons: {
+    icon: "/coding.png",
+    apple: "/coding.png",
+  },
   openGraph: {
     title: "Tazminur Rahman Tanim | Full Stack Web Developer",
     description:
       "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
+    url: SITE_URL,
+    siteName: "Tazminur Rahman Tanim",
+    images: [
+      {
+        url: "/api/og",
+        width: 800,
+        height: 800,
+        alt: "Tazminur Rahman Tanim - Full Stack Web Developer",
+      },
+    ],
     type: "website",
     locale: "en_US",
   },
@@ -37,6 +54,7 @@ export const metadata: Metadata = {
     title: "Tazminur Rahman Tanim | Full Stack Web Developer",
     description:
       "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
+    images: ["/api/og"],
   },
   robots: {
     index: true,

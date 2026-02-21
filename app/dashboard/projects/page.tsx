@@ -31,6 +31,29 @@ interface Project {
 
 type FormData = Omit<Project, "_id">;
 
+const TECH_SUGGESTIONS = [
+  "React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS",
+  "Tailwind CSS", "Bootstrap", "Sass", "Material UI", "Chakra UI", "Shadcn UI",
+  "Node.js", "Express.js", "NestJS", "Fastify",
+  "MongoDB", "PostgreSQL", "MySQL", "Redis", "Prisma", "Mongoose", "Supabase",
+  "Firebase", "AWS", "Vercel", "Netlify", "Docker", "Kubernetes",
+  "Git", "GitHub", "GitLab",
+  "Redux", "Zustand", "React Query", "SWR", "Axios",
+  "GraphQL", "REST API", "tRPC", "Socket.io",
+  "Python", "Django", "Flask", "FastAPI",
+  "PHP", "Laravel",
+  "Java", "Spring Boot",
+  "C#", ".NET",
+  "Go", "Rust",
+  "React Native", "Flutter", "Dart",
+  "Framer Motion", "GSAP", "Three.js",
+  "Jest", "Vitest", "Cypress", "Playwright",
+  "Stripe", "PayPal", "Razorpay",
+  "Cloudinary", "S3", "Uploadthing",
+  "NextAuth", "Clerk", "Auth0", "JWT",
+  "Figma", "Adobe XD",
+];
+
 const emptyForm: FormData = {
   title: "",
   description: "",
@@ -51,6 +74,7 @@ export default function DashboardProjects() {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [tagInput, setTagInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [search, setSearch] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState("");
@@ -81,7 +105,10 @@ export default function DashboardProjects() {
 
   const openAdd = () => {
     setEditingProject(null);
-    setForm(emptyForm);
+    const nextOrder = projects.length > 0
+      ? Math.max(...projects.map((p) => p.order || 0)) + 1
+      : 1;
+    setForm({ ...emptyForm, order: nextOrder });
     setTagInput("");
     setImageFile(null);
     setImagePreview("");
@@ -107,12 +134,31 @@ export default function DashboardProjects() {
     setShowModal(true);
   };
 
-  const addTag = () => {
-    const t = tagInput.trim();
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  const filteredSuggestions = TECH_SUGGESTIONS.filter(
+    (s) =>
+      !form.tags.includes(s) &&
+      s.toLowerCase().includes(tagInput.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const addTag = (value?: string) => {
+    const t = (value ?? tagInput).trim();
     if (t && !form.tags.includes(t)) {
       setForm({ ...form, tags: [...form.tags, t] });
     }
     setTagInput("");
+    setShowSuggestions(false);
   };
 
   const removeTag = (tag: string) => {
@@ -246,161 +292,149 @@ export default function DashboardProjects() {
         />
       </div>
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-2xl border border-white/4 bg-[#0e0e0e]">
-        <div className="hidden grid-cols-12 gap-4 border-b border-white/4 px-5 py-3 sm:grid">
-          <div className="col-span-4 text-xs font-semibold uppercase tracking-wider text-zinc-600">
-            Project
-          </div>
-          <div className="col-span-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">
-            Category
-          </div>
-          <div className="col-span-3 text-xs font-semibold uppercase tracking-wider text-zinc-600">
-            Tech Stack
-          </div>
-          <div className="col-span-1 text-xs font-semibold uppercase tracking-wider text-zinc-600">
-            Status
-          </div>
-          <div className="col-span-2 text-xs font-semibold uppercase tracking-wider text-zinc-600 text-right">
-            Actions
-          </div>
+      {/* Project List */}
+      {loading ? (
+        <div className="flex items-center justify-center py-16">
+          <LuLoader className="h-5 w-5 animate-spin text-zinc-500" />
         </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center px-5 py-16">
-            <LuLoader className="h-5 w-5 animate-spin text-zinc-500" />
-          </div>
-        ) : filtered.length === 0 ? (
-          <div className="px-5 py-12 text-center text-sm text-zinc-600">
-            {search ? "No projects match your search." : "No projects yet. Add your first one!"}
-          </div>
-        ) : (
-          filtered.map((project, i) => (
+      ) : filtered.length === 0 ? (
+        <div className="rounded-2xl border border-white/4 bg-[#0e0e0e] px-5 py-12 text-center text-sm text-zinc-600">
+          {search ? "No projects match your search." : "No projects yet. Add your first one!"}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {filtered.map((project, i) => (
             <motion.div
               key={project._id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: i * 0.04 }}
-              className="grid grid-cols-1 gap-3 border-b border-white/2 px-5 py-4 transition-colors hover:bg-white/1 sm:grid-cols-12 sm:items-center sm:gap-4"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="group flex gap-4 rounded-2xl border border-white/4 bg-[#0e0e0e] p-4 transition-all hover:border-white/8 sm:p-5"
             >
-              <div className="sm:col-span-4">
-                <div className="flex items-center gap-3">
-                  {project.image ? (
-                    <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg">
-                      <Image
-                        src={project.image}
-                        alt={project.title}
-                        fill
-                        className="object-cover"
-                        sizes="40px"
-                      />
-                    </div>
-                  ) : (
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500/20 to-purple-500/20 text-sm font-bold text-white/30">
-                      {project.title.charAt(0)}
-                    </div>
-                  )}
-                  <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-white">
-                      {project.title}
-                    </div>
-                    <div className="line-clamp-1 text-xs text-zinc-600">
-                      {project.description}
-                    </div>
-                  </div>
-                </div>
+              {/* Priority Badge */}
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500/20 to-purple-600/20 text-sm font-bold text-cyan-400 sm:h-9 sm:w-9">
+                {project.order || i + 1}
               </div>
 
-              <div className="sm:col-span-2">
-                <span className="rounded-full bg-white/4 px-2.5 py-1 text-xs font-medium text-zinc-400">
+              {/* Thumbnail */}
+              <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/6 bg-white/3 sm:h-16 sm:w-16">
+                {project.image ? (
+                  <Image
+                    src={project.image}
+                    alt={project.title}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-lg font-bold text-white/10">
+                    {project.title.charAt(0)}
+                  </div>
+                )}
+              </div>
+
+              {/* Content */}
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-white sm:text-base">
+                    {project.title}
+                  </h3>
+                  <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                      project.status === "published"
+                        ? "bg-green-500/10 text-green-400"
+                        : "bg-yellow-500/10 text-yellow-400"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        project.status === "published"
+                          ? "bg-green-400"
+                          : "bg-yellow-400"
+                      }`}
+                    />
+                    {project.status === "published" ? "Live" : "Draft"}
+                  </span>
+                </div>
+
+                {project.description && (
+                  <p className="mt-0.5 line-clamp-1 text-xs text-zinc-500">
+                    {project.description}
+                  </p>
+                )}
+
+                <span className="mt-1 inline-block rounded-full bg-white/4 px-2 py-0.5 text-[10px] font-medium text-zinc-400">
                   {project.category}
                 </span>
-              </div>
 
-              <div className="sm:col-span-3">
-                <div className="flex flex-wrap gap-1">
-                  {project.tags.slice(0, 3).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-400"
+                {/* Tags */}
+                {project.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {project.tags.slice(0, 5).map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-medium text-cyan-400"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                    {project.tags.length > 5 && (
+                      <span className="rounded-md bg-white/4 px-2 py-0.5 text-[10px] text-zinc-600">
+                        +{project.tags.length - 5}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Actions */}
+                <div className="mt-3 flex items-center gap-1.5">
+                  {project.liveUrl && (
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-7 items-center gap-1.5 rounded-lg bg-white/3 px-2.5 text-[11px] text-zinc-500 transition-colors hover:text-cyan-400"
                     >
-                      {tag}
-                    </span>
-                  ))}
-                  {project.tags.length > 3 && (
-                    <span className="text-[10px] text-zinc-600">
-                      +{project.tags.length - 3}
-                    </span>
+                      <HiExternalLink size={12} />
+                      Live demo
+                    </a>
                   )}
+                  {project.githubUrl && (
+                    <a
+                      href={project.githubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex h-7 items-center gap-1.5 rounded-lg bg-white/3 px-2.5 text-[11px] text-zinc-500 transition-colors hover:text-white"
+                    >
+                      <FaGithub size={12} />
+                      GitHub
+                    </a>
+                  )}
+                  <button
+                    onClick={() => openEdit(project)}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-cyan-400"
+                    aria-label="Edit project"
+                  >
+                    <HiPencil size={13} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(project._id)}
+                    disabled={deleting === project._id}
+                    className="flex h-7 w-7 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-red-400 disabled:opacity-50"
+                    aria-label="Delete project"
+                  >
+                    {deleting === project._id ? (
+                      <LuLoader size={13} className="animate-spin" />
+                    ) : (
+                      <HiTrash size={13} />
+                    )}
+                  </button>
                 </div>
               </div>
-
-              <div className="sm:col-span-1">
-                <span
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                    project.status === "published"
-                      ? "bg-green-500/10 text-green-400"
-                      : "bg-yellow-500/10 text-yellow-400"
-                  }`}
-                >
-                  <span
-                    className={`h-1.5 w-1.5 rounded-full ${
-                      project.status === "published"
-                        ? "bg-green-400"
-                        : "bg-yellow-400"
-                    }`}
-                  />
-                  {project.status === "published" ? "Live" : "Draft"}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-1.5 sm:col-span-2 sm:justify-end">
-                {project.liveUrl && (
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-cyan-400"
-                    title="Live demo"
-                  >
-                    <HiExternalLink size={14} />
-                  </a>
-                )}
-                {project.githubUrl && (
-                  <a
-                    href={project.githubUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-white"
-                    title="GitHub"
-                  >
-                    <FaGithub size={14} />
-                  </a>
-                )}
-                <button
-                  onClick={() => openEdit(project)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-cyan-400"
-                  title="Edit"
-                >
-                  <HiPencil size={14} />
-                </button>
-                <button
-                  onClick={() => handleDelete(project._id)}
-                  disabled={deleting === project._id}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/3 text-zinc-600 transition-colors hover:text-red-400 disabled:opacity-50"
-                  title="Delete"
-                >
-                  {deleting === project._id ? (
-                    <LuLoader size={14} className="animate-spin" />
-                  ) : (
-                    <HiTrash size={14} />
-                  )}
-                </button>
-              </div>
             </motion.div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* ===== Add/Edit Modal ===== */}
       <AnimatePresence>
@@ -468,20 +502,43 @@ export default function DashboardProjects() {
                   )}
                 </button>
 
-                {/* Title */}
-                <div>
-                  <label className="mb-1.5 block text-xs font-medium text-zinc-400">
-                    Project Title
-                  </label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm({ ...form, title: e.target.value })
-                    }
-                    className={inputCls}
-                    placeholder="My Awesome Project"
-                  />
+                {/* Title + Priority */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
+                  <div className="sm:col-span-3">
+                    <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      Project Title
+                    </label>
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={(e) =>
+                        setForm({ ...form, title: e.target.value })
+                      }
+                      className={inputCls}
+                      placeholder="My Awesome Project"
+                    />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs font-medium text-zinc-400">
+                      Priority
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={form.order || ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          order: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className={inputCls}
+                      placeholder="1"
+                    />
+                    <p className="mt-1 text-[10px] text-zinc-600">
+                      1 = first
+                    </p>
+                  </div>
                 </div>
 
                 {/* Description */}
@@ -560,24 +617,73 @@ export default function DashboardProjects() {
                       ))}
                     </div>
                   )}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={tagInput}
-                      onChange={(e) => setTagInput(e.target.value)}
-                      onKeyDown={(e) =>
-                        e.key === "Enter" && (e.preventDefault(), addTag())
-                      }
-                      className={`flex-1 ${inputCls}`}
-                      placeholder="Add tag..."
-                    />
-                    <button
-                      type="button"
-                      onClick={addTag}
-                      className="rounded-xl bg-white/4 px-4 text-sm text-zinc-400 transition-colors hover:text-white"
-                    >
-                      Add
-                    </button>
+                  <div className="relative" ref={suggestionsRef}>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => {
+                          setTagInput(e.target.value);
+                          setShowSuggestions(true);
+                        }}
+                        onFocus={() => setShowSuggestions(true)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            addTag();
+                          }
+                          if (e.key === "Escape") setShowSuggestions(false);
+                        }}
+                        className={`flex-1 ${inputCls}`}
+                        placeholder="Type or select tech..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addTag()}
+                        className="rounded-xl bg-white/4 px-4 text-sm text-zinc-400 transition-colors hover:text-white"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    <AnimatePresence>
+                      {showSuggestions && filteredSuggestions.length > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute z-50 mt-1.5 max-h-48 w-full overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 shadow-2xl"
+                        >
+                          {filteredSuggestions.slice(0, 20).map((s) => (
+                            <button
+                              key={s}
+                              type="button"
+                              onClick={() => addTag(s)}
+                              className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-300 transition-colors hover:bg-cyan-500/10 hover:text-cyan-400"
+                            >
+                              <HiPlus size={12} className="shrink-0 text-cyan-500/60" />
+                              {s}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {!showSuggestions && form.tags.length === 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {TECH_SUGGESTIONS.slice(0, 8).map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => addTag(s)}
+                            className="rounded-lg border border-white/6 bg-white/3 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-cyan-500/30 hover:text-cyan-400"
+                          >
+                            + {s}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

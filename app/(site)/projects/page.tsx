@@ -258,116 +258,126 @@ export default function Projects() {
 
       {/* Detail Modal */}
       <AnimatePresence>
-        {selected && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-              onClick={() => setSelected(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              className="fixed inset-x-4 top-[5%] z-50 mx-auto max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-white/8 bg-[#0c0c0c] shadow-2xl sm:inset-x-auto lg:top-[8%]"
-            >
-              <button
+        {selected && (() => {
+          const si = projects.indexOf(selected);
+          const accent = ACCENTS[(si >= 0 ? si : 0) % ACCENTS.length];
+          return (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
                 onClick={() => setSelected(null)}
-                className="absolute right-4 top-4 z-20 flex h-9 w-9 items-center justify-center rounded-xl bg-black/50 text-zinc-400 backdrop-blur-md transition-colors hover:bg-white/10 hover:text-white"
-                aria-label="Close modal"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+                onClick={() => setSelected(null)}
               >
-                <HiX size={18} />
-              </button>
+                <div
+                  className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0e0e0e] shadow-2xl shadow-black/60"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Accent bar */}
+                  <div className={`h-1 w-full bg-linear-to-r ${accent}`} />
 
-              <div className="flex flex-col lg:flex-row">
-                {/* Left — Image */}
-                <div className="relative w-full shrink-0 lg:w-[55%]">
+                  {/* Close */}
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="absolute right-3 top-4 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-black/50 text-zinc-400 backdrop-blur-md transition-colors hover:bg-white/10 hover:text-white"
+                    aria-label="Close modal"
+                  >
+                    <HiX size={14} />
+                  </button>
+
+                  {/* Image */}
                   {selected.image ? (
-                    <div className="relative aspect-video w-full overflow-hidden bg-[#0a0a0a] lg:aspect-auto lg:h-full lg:min-h-[420px]">
-                      <Image
-                        src={selected.image}
-                        alt={selected.title}
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 1024px) 100vw, 55vw"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-[#0c0c0c]/60 via-transparent to-transparent lg:bg-linear-to-r lg:from-transparent lg:to-[#0c0c0c]/30" />
-                    </div>
-                  ) : (
-                    <div className="flex aspect-video items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10 lg:aspect-auto lg:h-full lg:min-h-[420px]">
-                      <HiCode size={56} className="text-white/10" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Right — Details */}
-                <div className="flex flex-1 flex-col p-6 sm:p-8 lg:py-10">
-                  {/* Category */}
-                  <span className="mb-4 inline-block w-fit rounded-full bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-400">
-                    {selected.category}
-                  </span>
-
-                  <h3 className="mb-3 text-2xl font-bold leading-tight text-white sm:text-3xl">
-                    {selected.title}
-                  </h3>
-
-                  {selected.description && (
-                    <p className="mb-6 text-sm leading-relaxed text-zinc-400 sm:text-base">
-                      {selected.description}
-                    </p>
-                  )}
-
-                  {/* Tags */}
-                  {selected.tags && selected.tags.length > 0 && (
-                    <div className="mb-6">
-                      <p className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                        Technologies Used
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {selected.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-300 ring-1 ring-white/6"
-                          >
-                            {tag}
-                          </span>
-                        ))}
+                    <div className="relative mx-4 mt-4 overflow-hidden rounded-xl border border-white/6">
+                      <div className="relative aspect-video w-full bg-[#0a0a0a]">
+                        <Image
+                          src={selected.image}
+                          alt={selected.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 448px) 100vw, 400px"
+                        />
                       </div>
                     </div>
+                  ) : (
+                    <div className={`mx-4 mt-4 flex aspect-video items-center justify-center rounded-xl bg-linear-to-br ${accent} opacity-10`}>
+                      <HiCode size={40} className="text-white" />
+                    </div>
                   )}
 
-                  {/* Links */}
-                  <div className="mt-auto flex flex-wrap gap-3 pt-2">
-                    {selected.liveUrl && (
-                      <a
-                        href={selected.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-cyan-500 to-purple-600 px-6 py-3 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
-                      >
-                        <HiExternalLink size={16} />
-                        Live Demo
-                      </a>
+                  <div className="p-4 sm:p-5">
+                    {/* Category + Title */}
+                    <span className="mb-2 inline-block rounded-md bg-cyan-500/10 px-2 py-0.5 text-[10px] font-semibold text-cyan-400">
+                      {selected.category}
+                    </span>
+                    <h3 className="mb-1 text-sm font-bold text-white sm:text-base">
+                      {selected.title}
+                    </h3>
+
+                    {selected.description && (
+                      <p className="mb-3 line-clamp-3 text-xs leading-relaxed text-zinc-500">
+                        {selected.description}
+                      </p>
                     )}
-                    {selected.githubUrl && (
-                      <a
-                        href={selected.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl border border-white/8 bg-white/3 px-6 py-3 text-sm font-medium text-zinc-300 transition-all hover:border-white/15 hover:text-white"
-                      >
-                        <FaGithub size={16} />
-                        Source Code
-                      </a>
+
+                    {/* Tags */}
+                    {selected.tags && selected.tags.length > 0 && (
+                      <div className="mb-4">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+                          Tech Stack
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selected.tags.map((tag) => (
+                            <span
+                              key={tag}
+                              className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] font-medium text-zinc-300 ring-1 ring-white/6"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     )}
+
+                    {/* Links */}
+                    <div className="flex gap-2">
+                      {selected.liveUrl && (
+                        <a
+                          href={selected.liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={`inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-linear-to-r ${accent} px-4 py-2 text-xs font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/15`}
+                        >
+                          <HiExternalLink size={13} />
+                          Live Demo
+                        </a>
+                      )}
+                      {selected.githubUrl && (
+                        <a
+                          href={selected.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/3 px-4 py-2 text-xs font-semibold text-zinc-300 transition-all hover:border-white/15 hover:text-white"
+                        >
+                          <FaGithub size={13} />
+                          Source Code
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          </>
-        )}
+              </motion.div>
+            </>
+          );
+        })()}
       </AnimatePresence>
     </section>
   );

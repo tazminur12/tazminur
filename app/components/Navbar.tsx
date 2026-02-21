@@ -36,11 +36,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const prevPathname = useState(pathname)[0];
-  if (pathname !== prevPathname && mobileOpen) {
-    setMobileOpen(false);
-  }
-
   return (
     <>
       <motion.nav
@@ -49,7 +44,7 @@ export default function Navbar() {
         transition={{ duration: 0.5, ease: "easeOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
           scrolled
-            ? "bg-[#0a0a0a]/80 shadow-lg shadow-black/30 backdrop-blur-xl border-b border-white/[0.04]"
+            ? "bg-[#0a0a0a]/80 shadow-lg shadow-black/30 backdrop-blur-xl border-b border-white/4"
             : "bg-transparent"
         }`}
       >
@@ -57,7 +52,7 @@ export default function Navbar() {
           <div className="flex h-16 items-center justify-between lg:h-[72px]">
             {/* Logo */}
             <Link href="/" className="group relative flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 text-sm font-bold text-white transition-transform group-hover:scale-105">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500 to-purple-600 text-sm font-bold text-white transition-transform group-hover:scale-105">
                 T
               </div>
               <div className="hidden sm:block">
@@ -72,7 +67,7 @@ export default function Navbar() {
 
             {/* Desktop nav */}
             <div className="hidden items-center lg:flex">
-              <div className="flex items-center rounded-full border border-white/[0.04] bg-white/[0.02] px-1.5 py-1.5">
+              <div className="flex items-center rounded-full border border-white/4 bg-white/2 px-1.5 py-1.5">
                 {navLinks.map((link) => {
                   const isActive = pathname === link.href;
                   return (
@@ -88,7 +83,7 @@ export default function Navbar() {
                       {isActive && (
                         <motion.div
                           layoutId="activeNavPill"
-                          className="absolute inset-0 rounded-full bg-white/[0.08] ring-1 ring-white/[0.08]"
+                          className="absolute inset-0 rounded-full bg-white/8 ring-1 ring-white/8"
                           transition={{
                             type: "spring",
                             stiffness: 350,
@@ -109,14 +104,14 @@ export default function Navbar() {
                 href="https://drive.google.com/file/d/1tF52nFZzYk5XOIrwqXKpi2Mecr_mKVAB/view?usp=sharing"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-4 py-2 text-[13px] font-medium text-zinc-400 transition-all hover:border-white/[0.15] hover:text-white md:flex"
+                className="hidden items-center gap-1.5 rounded-full border border-white/8 bg-white/3 px-4 py-2 text-[13px] font-medium text-zinc-400 transition-all hover:border-white/15 hover:text-white md:flex"
               >
                 <HiDownload size={14} />
                 Resume
               </a>
               <Link
                 href="/contact"
-                className="hidden rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 px-5 py-2 text-[13px] font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20 md:block"
+                className="hidden rounded-full bg-linear-to-r from-cyan-500 to-purple-600 px-5 py-2 text-[13px] font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20 md:block"
               >
                 Hire Me
               </Link>
@@ -124,32 +119,10 @@ export default function Navbar() {
               {/* Mobile toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.06] bg-white/[0.03] text-zinc-400 transition-colors hover:text-white lg:hidden"
+                className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/6 bg-white/3 text-zinc-400 transition-colors hover:text-white lg:hidden"
                 aria-label="Toggle menu"
               >
-                <AnimatePresence mode="wait">
-                  {mobileOpen ? (
-                    <motion.div
-                      key="close"
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      <HiX size={20} />
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="menu"
-                      initial={{ rotate: 90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: -90, opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                    >
-                      <HiMenuAlt3 size={20} />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                {mobileOpen ? <HiX size={20} /> : <HiMenuAlt3 size={20} />}
               </button>
             </div>
           </div>
@@ -176,16 +149,16 @@ export default function Navbar() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
-              className="fixed top-0 right-0 z-50 flex h-full w-[280px] flex-col border-l border-white/[0.04] bg-[#0c0c0c] lg:hidden"
+              className="fixed top-0 right-0 z-50 flex h-full w-[280px] flex-col border-l border-white/4 bg-[#0c0c0c] lg:hidden"
             >
               {/* Mobile header */}
-              <div className="flex h-16 items-center justify-between border-b border-white/[0.04] px-5">
+              <div className="flex h-16 items-center justify-between border-b border-white/4 px-5">
                 <span className="text-sm font-semibold text-zinc-300">
                   Navigation
                 </span>
                 <button
                   onClick={() => setMobileOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/[0.04] text-zinc-500 hover:text-white"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/4 text-zinc-500 hover:text-white"
                   aria-label="Close menu"
                 >
                   <HiX size={16} />
@@ -207,10 +180,11 @@ export default function Navbar() {
                       >
                         <Link
                           href={link.href}
+                          onClick={() => setMobileOpen(false)}
                           className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
                             isActive
                               ? "bg-cyan-500/10 text-cyan-400"
-                              : "text-zinc-500 hover:bg-white/[0.03] hover:text-white"
+                              : "text-zinc-500 hover:bg-white/3 hover:text-white"
                           }`}
                         >
                           <Icon
@@ -231,19 +205,20 @@ export default function Navbar() {
               </div>
 
               {/* Mobile CTA */}
-              <div className="border-t border-white/[0.04] p-4 space-y-2.5">
+              <div className="space-y-2.5 border-t border-white/4 p-4">
                 <a
                   href="/resume.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.03] py-2.5 text-sm font-medium text-zinc-400 transition-all hover:text-white"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/8 bg-white/3 py-2.5 text-sm font-medium text-zinc-400 transition-all hover:text-white"
                 >
                   <HiDownload size={15} />
                   Download Resume
                 </a>
                 <Link
                   href="/contact"
-                  className="block w-full rounded-xl bg-gradient-to-r from-cyan-500 to-purple-600 py-2.5 text-center text-sm font-medium text-white"
+                  onClick={() => setMobileOpen(false)}
+                  className="block w-full rounded-xl bg-linear-to-r from-cyan-500 to-purple-600 py-2.5 text-center text-sm font-medium text-white"
                 >
                   Hire Me
                 </Link>

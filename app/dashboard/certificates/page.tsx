@@ -43,6 +43,32 @@ interface CertForm {
   order: number;
 }
 
+const SKILL_SUGGESTIONS = [
+  "React", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS",
+  "Tailwind CSS", "Bootstrap", "Sass", "Material UI", "Chakra UI", "Shadcn UI",
+  "Node.js", "Express.js", "NestJS", "Fastify",
+  "MongoDB", "PostgreSQL", "MySQL", "Redis", "Prisma", "Mongoose", "Supabase",
+  "Firebase", "AWS", "Azure", "Google Cloud", "Vercel", "Netlify", "Docker", "Kubernetes",
+  "Git", "GitHub", "GitLab",
+  "Redux", "Zustand", "React Query", "SWR", "Axios",
+  "GraphQL", "REST API", "tRPC", "Socket.io",
+  "Python", "Django", "Flask", "FastAPI",
+  "PHP", "Laravel",
+  "Java", "Spring Boot",
+  "C#", ".NET",
+  "Go", "Rust",
+  "React Native", "Flutter", "Dart",
+  "Framer Motion", "GSAP", "Three.js",
+  "Jest", "Vitest", "Cypress", "Playwright",
+  "Stripe", "PayPal", "Razorpay",
+  "Cloudinary", "S3", "Uploadthing",
+  "NextAuth", "Clerk", "Auth0", "JWT",
+  "Figma", "Adobe XD",
+  "Linux", "Networking", "Cybersecurity", "Cloud Computing",
+  "Machine Learning", "Data Science", "AI", "Deep Learning",
+  "Agile", "Scrum", "DevOps", "CI/CD",
+];
+
 const emptyForm: CertForm = {
   title: "",
   issuer: "",
@@ -89,7 +115,9 @@ export default function DashboardCertificates() {
   const [imagePreview, setImagePreview] = useState("");
   const [deleting, setDeleting] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
+  const [showSkillSuggestions, setShowSkillSuggestions] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const skillSuggestionsRef = useRef<HTMLDivElement>(null);
 
   const fetchCerts = useCallback(async () => {
     try {
@@ -109,7 +137,10 @@ export default function DashboardCertificates() {
 
   const openAdd = () => {
     setEditing(null);
-    setForm(emptyForm);
+    const nextOrder = certs.length > 0
+      ? Math.max(...certs.map((c) => c.order || 0)) + 1
+      : 1;
+    setForm({ ...emptyForm, order: nextOrder });
     setImageFile(null);
     setImagePreview("");
     setSkillInput("");
@@ -144,23 +175,36 @@ export default function DashboardCertificates() {
     }
   };
 
-  const addSkill = () => {
-    const trimmed = skillInput.trim();
+  const filteredSkillSuggestions = SKILL_SUGGESTIONS.filter(
+    (s) =>
+      !form.skills.includes(s) &&
+      s.toLowerCase().includes(skillInput.toLowerCase())
+  );
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        skillSuggestionsRef.current &&
+        !skillSuggestionsRef.current.contains(e.target as Node)
+      ) {
+        setShowSkillSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const addSkill = (value?: string) => {
+    const trimmed = (value ?? skillInput).trim();
     if (trimmed && !form.skills.includes(trimmed)) {
       setForm({ ...form, skills: [...form.skills, trimmed] });
     }
     setSkillInput("");
+    setShowSkillSuggestions(false);
   };
 
   const removeSkill = (skill: string) => {
     setForm({ ...form, skills: form.skills.filter((s) => s !== skill) });
-  };
-
-  const handleSkillKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addSkill();
-    }
   };
 
   const handleSave = async () => {
@@ -291,6 +335,11 @@ export default function DashboardCertificates() {
               transition={{ delay: i * 0.05 }}
               className="group flex gap-4 rounded-2xl border border-white/4 bg-[#0e0e0e] p-4 transition-all hover:border-white/8 sm:p-5"
             >
+              {/* Position Badge */}
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-cyan-500/20 to-purple-600/20 text-sm font-bold text-cyan-400 sm:h-9 sm:w-9">
+                {cert.order || i + 1}
+              </div>
+
               {/* Thumbnail */}
               <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl border border-white/6 bg-white/3 sm:h-16 sm:w-16">
                 {cert.image ? (
@@ -414,20 +463,41 @@ export default function DashboardCertificates() {
               </div>
 
               <div className="space-y-5 p-6">
-                {/* Name */}
-                <div>
-                  <label className={labelCls}>
-                    Name <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm({ ...form, title: e.target.value })
-                    }
-                    className={inputCls}
-                    placeholder="Ex: Microsoft Certified Network Associate Security"
-                  />
+                {/* Name + Priority */}
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-4">
+                  <div className="sm:col-span-3">
+                    <label className={labelCls}>
+                      Name <span className="text-red-400">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={form.title}
+                      onChange={(e) =>
+                        setForm({ ...form, title: e.target.value })
+                      }
+                      className={inputCls}
+                      placeholder="Ex: Microsoft Certified Network Associate Security"
+                    />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Priority</label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={form.order || ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          order: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className={inputCls}
+                      placeholder="1"
+                    />
+                    <p className="mt-1 text-[10px] text-zinc-600">
+                      1 = first
+                    </p>
+                  </div>
                 </div>
 
                 {/* Issuing Organization */}
@@ -550,29 +620,12 @@ export default function DashboardCertificates() {
                 <div>
                   <label className={labelCls}>Skills</label>
                   <p className="mb-2 text-[11px] text-zinc-600">
-                    Associate skills to this certification. Press Enter or comma
-                    to add.
+                    Associate skills to this certification. Type to search or
+                    select from suggestions.
                   </p>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={skillInput}
-                      onChange={(e) => setSkillInput(e.target.value)}
-                      onKeyDown={handleSkillKeyDown}
-                      className={inputCls}
-                      placeholder="Ex: React, JavaScript, Node.js"
-                    />
-                    <button
-                      type="button"
-                      onClick={addSkill}
-                      disabled={!skillInput.trim()}
-                      className="shrink-0 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2.5 text-xs font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20 disabled:opacity-40"
-                    >
-                      Add
-                    </button>
-                  </div>
+
                   {form.skills.length > 0 && (
-                    <div className="mt-2.5 flex flex-wrap gap-2">
+                    <div className="mb-2.5 flex flex-wrap gap-2">
                       {form.skills.map((skill) => (
                         <span
                           key={skill}
@@ -591,6 +644,80 @@ export default function DashboardCertificates() {
                       ))}
                     </div>
                   )}
+
+                  <div className="relative" ref={skillSuggestionsRef}>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={skillInput}
+                        onChange={(e) => {
+                          setSkillInput(e.target.value);
+                          setShowSkillSuggestions(true);
+                        }}
+                        onFocus={() => setShowSkillSuggestions(true)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === ",") {
+                            e.preventDefault();
+                            addSkill();
+                          }
+                          if (e.key === "Escape") setShowSkillSuggestions(false);
+                        }}
+                        className={inputCls}
+                        placeholder="Type or select skill..."
+                      />
+                      <button
+                        type="button"
+                        onClick={() => addSkill()}
+                        disabled={!skillInput.trim()}
+                        className="shrink-0 rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-2.5 text-xs font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20 disabled:opacity-40"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    <AnimatePresence>
+                      {showSkillSuggestions &&
+                        filteredSkillSuggestions.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute z-50 mt-1.5 max-h-48 w-full overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 shadow-2xl"
+                          >
+                            {filteredSkillSuggestions.slice(0, 20).map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => addSkill(s)}
+                                className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-zinc-300 transition-colors hover:bg-cyan-500/10 hover:text-cyan-400"
+                              >
+                                <HiPlus
+                                  size={12}
+                                  className="shrink-0 text-cyan-500/60"
+                                />
+                                {s}
+                              </button>
+                            ))}
+                          </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {!showSkillSuggestions && form.skills.length === 0 && (
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {SKILL_SUGGESTIONS.slice(0, 8).map((s) => (
+                          <button
+                            key={s}
+                            type="button"
+                            onClick={() => addSkill(s)}
+                            className="rounded-lg border border-white/6 bg-white/3 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-cyan-500/30 hover:text-cyan-400"
+                          >
+                            + {s}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Media / Image Upload */}

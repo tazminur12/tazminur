@@ -189,115 +189,133 @@ export default function Certificates() {
 
       {/* Detail Modal */}
       <AnimatePresence>
-        {selected && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-              onClick={() => setSelected(null)}
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 16 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 16 }}
-              className="fixed inset-x-4 top-[6%] z-50 mx-auto max-h-[88vh] max-w-2xl overflow-y-auto rounded-2xl border border-white/8 bg-[#0c0c0c] shadow-2xl sm:inset-x-auto"
-            >
-              {/* Close */}
-              <button
+        {selected && (() => {
+          const ci = certs.indexOf(selected);
+          const accent = ACCENTS[(ci >= 0 ? ci : 0) % ACCENTS.length];
+          const dateStr = formatDate(selected);
+          return (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
                 onClick={() => setSelected(null)}
-                className="absolute right-3 top-3 z-20 flex h-8 w-8 items-center justify-center rounded-lg bg-black/50 text-zinc-400 backdrop-blur-md transition-colors hover:text-white"
-                aria-label="Close modal"
+              />
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ type: "spring", duration: 0.35, bounce: 0.15 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
+                onClick={() => setSelected(null)}
               >
-                <HiX size={16} />
-              </button>
+                <div
+                  className="relative w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#0e0e0e] shadow-2xl shadow-black/60"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {/* Accent bar */}
+                  <div className={`h-1 w-full bg-linear-to-r ${accent.accent}`} />
 
-              {/* Certificate Image */}
-              {selected.image && (
-                <div className="relative w-full bg-white">
-                  <Image
-                    src={selected.image}
-                    alt={selected.title}
-                    width={800}
-                    height={560}
-                    className="h-auto w-full"
-                    sizes="(max-width: 672px) 100vw, 672px"
-                  />
-                </div>
-              )}
-
-              <div className="p-5 sm:p-6">
-                {/* Title & Issuer */}
-                <div className="mb-5 flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-cyan-500/15 to-purple-500/15">
-                    <HiBadgeCheck size={22} className="text-cyan-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-white sm:text-xl">
-                      {selected.title}
-                    </h3>
-                    {selected.issuer && (
-                      <p className="text-sm text-zinc-400">{selected.issuer}</p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Details */}
-                {(formatDate(selected) || selected.credentialId) && (
-                  <div className="mb-5 space-y-2.5 rounded-xl border border-white/6 bg-white/2 p-4">
-                    {formatDate(selected) && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-500">Date</span>
-                        <span className="text-zinc-300">{formatDate(selected)}</span>
-                      </div>
-                    )}
-                    {selected.credentialId && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-zinc-500">Credential ID</span>
-                        <span className="font-mono text-xs text-zinc-300">
-                          {selected.credentialId}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Skills */}
-                {selected.skills && selected.skills.length > 0 && (
-                  <div className="mb-5">
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-                      Skills
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {selected.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="rounded-lg bg-cyan-500/10 px-3 py-1 text-xs font-medium text-cyan-400"
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Credential link */}
-                {selected.credentialUrl && (
-                  <a
-                    href={selected.credentialUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-cyan-500 to-purple-600 px-5 py-2.5 text-sm font-medium text-white transition-all hover:shadow-lg hover:shadow-cyan-500/20"
+                  {/* Close */}
+                  <button
+                    onClick={() => setSelected(null)}
+                    className="absolute right-3 top-4 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/5 text-zinc-500 transition-colors hover:bg-white/10 hover:text-white"
+                    aria-label="Close modal"
                   >
-                    Show credential
-                    <HiExternalLink size={15} />
-                  </a>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
+                    <HiX size={14} />
+                  </button>
+
+                  {/* Image */}
+                  {selected.image && (
+                    <div className="relative mx-4 mt-4 overflow-hidden rounded-xl border border-white/6 bg-white">
+                      <Image
+                        src={selected.image}
+                        alt={selected.title}
+                        width={600}
+                        height={400}
+                        className="h-auto w-full"
+                        sizes="(max-width: 448px) 100vw, 400px"
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-4 sm:p-5">
+                    {/* Title & Issuer */}
+                    <div className="mb-3 flex items-start gap-2.5">
+                      <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br ${accent.bg}`}>
+                        <HiBadgeCheck size={18} className="text-cyan-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <h3 className="text-sm font-bold leading-snug text-white sm:text-base">
+                          {selected.title}
+                        </h3>
+                        {selected.issuer && (
+                          <p className="text-xs text-zinc-400">{selected.issuer}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Info rows */}
+                    {(dateStr || selected.credentialId) && (
+                      <div className="mb-3 space-y-1.5 rounded-xl border border-white/5 bg-white/2 px-3 py-2.5">
+                        {dateStr && (
+                          <div className="flex items-center justify-between">
+                            <span className="flex items-center gap-1.5 text-[11px] text-zinc-500">
+                              <HiCalendar size={11} />
+                              Date
+                            </span>
+                            <span className="text-[11px] text-zinc-300">{dateStr}</span>
+                          </div>
+                        )}
+                        {selected.credentialId && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-[11px] text-zinc-500">Credential ID</span>
+                            <span className="font-mono text-[11px] text-zinc-300">
+                              {selected.credentialId}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Skills */}
+                    {selected.skills && selected.skills.length > 0 && (
+                      <div className="mb-4">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
+                          Skills
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {selected.skills.map((skill) => (
+                            <span
+                              key={skill}
+                              className="rounded-md bg-cyan-500/10 px-2 py-0.5 text-[11px] font-medium text-cyan-400"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Credential link */}
+                    {selected.credentialUrl && (
+                      <a
+                        href={selected.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`inline-flex w-full items-center justify-center gap-2 rounded-xl bg-linear-to-r ${accent.accent} px-4 py-2 text-xs font-semibold text-white transition-all hover:shadow-lg hover:shadow-cyan-500/15`}
+                      >
+                        Show credential
+                        <HiExternalLink size={13} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          );
+        })()}
       </AnimatePresence>
     </section>
   );
