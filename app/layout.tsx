@@ -7,43 +7,61 @@ const inter = Inter({
   variable: "--font-geist-sans",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tazminur.me";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://tazminur.me";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Tazminur Rahman Tanim | Full Stack Web Developer",
+    default: "Tazminur Rahman Tanim | Full Stack Web Developer & Next.js Specialist",
     template: "%s | Tazminur Rahman Tanim",
   },
   description:
-    "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies. Building performant, scalable web applications with clean code.",
+    "Tazminur Rahman Tanim — Full Stack Web Developer & Next.js Specialist from Bangladesh. Expert in React, Next.js, Node.js, TypeScript, MongoDB & MERN Stack. Founder & CEO of Algowave Agency. Available for freelance projects.",
   keywords: [
-    "Full Stack Developer",
-    "Web Developer",
-    "React",
-    "Next.js",
-    "Node.js",
-    "TypeScript",
-    "Portfolio",
     "Tazminur Rahman Tanim",
+    "Tazminur Rahman",
+    "Tanim Developer",
+    "Full Stack Web Developer",
+    "Next.js Developer",
+    "React Developer",
+    "MERN Stack Developer",
+    "Node.js Developer",
+    "TypeScript Developer",
+    "Web Developer Bangladesh",
+    "Freelance Web Developer",
+    "Portfolio",
+    "Algowave Agency",
+    "Flyoval Limited",
+    "JavaScript Developer",
+    "MongoDB Developer",
+    "Tailwind CSS",
+    "Next.js Specialist",
+    "React Next.js Projects",
+    "Hire Web Developer",
   ],
-  authors: [{ name: "Tazminur Rahman Tanim" }],
+  authors: [{ name: "Tazminur Rahman Tanim", url: SITE_URL }],
+  creator: "Tazminur Rahman Tanim",
+  publisher: "Tazminur Rahman Tanim",
+  category: "Technology",
+  classification: "Portfolio",
   icons: {
     icon: "/coding.png",
     apple: "/coding.png",
+    shortcut: "/coding.png",
   },
   openGraph: {
-    title: "Tazminur Rahman Tanim | Full Stack Web Developer",
+    title: "Tazminur Rahman Tanim | Full Stack Web Developer & Next.js Specialist",
     description:
-      "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
+      "Full Stack Web Developer specializing in React, Next.js, Node.js & MERN Stack. Founder & CEO of Algowave Agency. Available for freelance projects worldwide.",
     url: SITE_URL,
-    siteName: "Tazminur Rahman Tanim",
+    siteName: "Tazminur Rahman Tanim — Portfolio",
     images: [
       {
         url: "/api/og",
-        width: 800,
-        height: 800,
-        alt: "Tazminur Rahman Tanim - Full Stack Web Developer",
+        width: 1200,
+        height: 630,
+        alt: "Tazminur Rahman Tanim - Full Stack Web Developer & Next.js Specialist",
+        type: "image/jpeg",
       },
     ],
     type: "website",
@@ -51,14 +69,28 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tazminur Rahman Tanim | Full Stack Web Developer",
+    title: "Tazminur Rahman Tanim | Full Stack Web Developer & Next.js Specialist",
     description:
-      "Full Stack Web Developer specializing in React, Next.js, Node.js, and modern web technologies.",
+      "Full Stack Web Developer specializing in React, Next.js, Node.js & MERN Stack. Available for freelance projects.",
     images: ["/api/og"],
+    creator: "@tazminur12",
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
   },
 };
 
@@ -67,8 +99,44 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Tazminur Rahman Tanim",
+    url: SITE_URL,
+    image: `${SITE_URL}/api/og`,
+    jobTitle: "Full Stack Web Developer",
+    description:
+      "Full Stack Web Developer & Next.js Specialist. Founder & CEO of Algowave Agency. Expert in React, Next.js, Node.js, TypeScript, MongoDB & MERN Stack.",
+    sameAs: [
+      "https://github.com/tazminur12",
+      "https://www.linkedin.com/in/tazminur-rahman-tanim-305315336",
+      "https://www.facebook.com/tan.im.921025",
+    ],
+    knowsAbout: [
+      "React",
+      "Next.js",
+      "Node.js",
+      "TypeScript",
+      "MongoDB",
+      "MERN Stack",
+      "Full Stack Web Development",
+      "Tailwind CSS",
+    ],
+    worksFor: {
+      "@type": "Organization",
+      name: "Algowave Agency",
+    },
+  };
+
   return (
     <html lang="en" className="dark">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={`${inter.variable} antialiased`}>{children}</body>
     </html>
   );

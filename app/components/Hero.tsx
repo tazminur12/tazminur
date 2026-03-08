@@ -6,6 +6,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { HiArrowRight, HiMail, HiDownload } from "react-icons/hi";
 import { FaGithub, FaLinkedin, FaTwitter, FaFacebook } from "react-icons/fa";
+import { useProfilePicture } from "@/lib/useProfilePicture";
 
 const roles = [
   "Full Stack Web Developer",
@@ -51,25 +52,6 @@ function TypeWriter({ words }: { words: string[] }) {
       <span className="animate-pulse text-cyan-400">|</span>
     </span>
   );
-}
-
-function useProfilePicture() {
-  const [profileUrl, setProfileUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/settings/profile-picture")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setProfileUrl(data.url || "");
-      })
-      .catch(() => {
-        if (!cancelled) setProfileUrl("");
-      });
-    return () => { cancelled = true; };
-  }, []);
-
-  return profileUrl;
 }
 
 const socials = [

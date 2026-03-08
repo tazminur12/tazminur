@@ -10,7 +10,7 @@ import {
   HiBadgeCheck,
   HiChat,
   HiMail,
-  HiMenuAlt2,
+  HiMenu,
   HiX,
   HiArrowLeft,
   HiSearch,
@@ -206,10 +206,10 @@ export default function DashboardLayout({
         <header className="flex h-14 shrink-0 items-center gap-4 border-b border-white/4 bg-[#0a0a0a]/60 px-4 backdrop-blur-md lg:h-16 lg:px-6">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 text-zinc-500 lg:hidden"
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/6 text-zinc-400 hover:text-white lg:hidden"
             aria-label="Open sidebar"
           >
-            <HiMenuAlt2 size={18} />
+            <HiMenu size={20} />
           </button>
 
           <h1 className="text-base font-semibold text-white">{currentPage}</h1>

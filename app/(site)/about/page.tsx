@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -13,6 +12,7 @@ import {
   HiDownload,
   HiCheckCircle,
 } from "react-icons/hi";
+import { useProfilePicture } from "@/lib/useProfilePicture";
 
 const stats = [
   { icon: HiCode, label: "Projects Completed", value: "50+", color: "from-cyan-500 to-blue-500" },
@@ -57,21 +57,7 @@ const fadeUp = {
 };
 
 export default function About() {
-  const [profileUrl, setProfileUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetch("/api/settings/profile-picture")
-      .then((res) => res.json())
-      .then((data) => {
-        if (!cancelled) setProfileUrl(data.url || "");
-      })
-      .catch(() => {
-        if (!cancelled) setProfileUrl("");
-      });
-    return () => { cancelled = true; };
-  }, []);
-
+  const profileUrl = useProfilePicture();
   const isLoading = profileUrl === null;
   const imgSrc = profileUrl || "";
 
