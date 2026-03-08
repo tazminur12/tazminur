@@ -6,7 +6,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { HiArrowRight, HiMail, HiDownload } from "react-icons/hi";
 import { FaGithub, FaLinkedin, FaTwitter, FaFacebook } from "react-icons/fa";
-import { useProfilePicture } from "@/lib/useProfilePicture";
 
 const roles = [
   "Full Stack Web Developer",
@@ -68,10 +67,6 @@ const stats = [
 ];
 
 export default function Hero() {
-  const profileUrl = useProfilePicture();
-  const isLoading = profileUrl === null;
-  const imgSrc = profileUrl || "";
-
   return (
     <section
       id="home"
@@ -232,24 +227,14 @@ export default function Hero() {
 
               {/* Profile image container */}
               <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-white/6 sm:h-80 sm:w-80 lg:h-[360px] lg:w-[360px]">
-                {isLoading ? (
-                  <div className="absolute inset-0 animate-pulse bg-linear-to-br from-cyan-500/10 to-purple-500/10" />
-                ) : imgSrc ? (
-                  <Image
-                    src={imgSrc}
-                    alt="Tazminur Rahman Tanim"
-                    fill
-                    className="object-cover"
-                    priority
-                    sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10">
-                    <span className="text-6xl font-bold text-white/6 sm:text-7xl">
-                      TRT
-                    </span>
-                  </div>
-                )}
+                <Image
+                  src="/tanim.jpeg"
+                  alt="Tazminur Rahman Tanim"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 640px) 256px, (max-width: 1024px) 320px, 360px"
+                />
               </div>
 
               {/* Floating badge */}

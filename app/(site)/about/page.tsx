@@ -12,8 +12,6 @@ import {
   HiDownload,
   HiCheckCircle,
 } from "react-icons/hi";
-import { useProfilePicture } from "@/lib/useProfilePicture";
-
 const stats = [
   { icon: HiCode, label: "Projects Completed", value: "50+", color: "from-cyan-500 to-blue-500" },
   { icon: HiBriefcase, label: "Years Experience", value: "3+", color: "from-purple-500 to-pink-500" },
@@ -57,10 +55,6 @@ const fadeUp = {
 };
 
 export default function About() {
-  const profileUrl = useProfilePicture();
-  const isLoading = profileUrl === null;
-  const imgSrc = profileUrl || "";
-
   return (
     <section id="about" className="relative px-4 py-20 lg:py-28">
       <div className="mx-auto max-w-6xl">
@@ -98,23 +92,14 @@ export default function About() {
             <div className="relative">
               <div className="absolute -inset-3 rounded-2xl bg-linear-to-br from-cyan-500/20 via-transparent to-purple-500/20 blur-2xl" />
               <div className="relative h-72 w-72 overflow-hidden rounded-2xl border border-white/6 sm:h-80 sm:w-80">
-                {isLoading ? (
-                  <div className="absolute inset-0 animate-pulse bg-linear-to-br from-cyan-500/10 to-purple-500/10" />
-                ) : imgSrc ? (
-                  <Image
-                    src={imgSrc}
-                    alt="Tazminur Rahman Tanim"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 288px, 320px"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-linear-to-br from-cyan-500/10 to-purple-500/10">
-                    <span className="text-7xl font-bold text-white/4">
-                      TRT
-                    </span>
-                  </div>
-                )}
+                <Image
+                  src="/tanim.jpeg"
+                  alt="Tazminur Rahman Tanim"
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 640px) 288px, 320px"
+                />
               </div>
 
               {/* Floating badge */}
