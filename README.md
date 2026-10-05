@@ -8,8 +8,9 @@ A modern, full-stack portfolio website built with Next.js 16, featuring a public
 
 - **Framework:** Next.js 16 (App Router)
 - **Language:** TypeScript
-- **Styling:** Tailwind CSS v4
-- **Animations:** Framer Motion
+- **Styling:** Tailwind CSS v4 & Custom CSS Shaders
+- **Physics & Motion Engine:** Framer Motion 12 (3D Tilt & Magnetic Physics)
+- **Design Aesthetic:** 3D Antigravity & Cyber-Void (OLED Void #010103)
 - **Database:** MongoDB with Mongoose
 - **Image Storage:** Cloudinary
 - **Authentication:** JWT (jose) with HTTP-only cookies
@@ -17,13 +18,19 @@ A modern, full-stack portfolio website built with Next.js 16, featuring a public
 
 ## Features
 
-### Public Site
-- Responsive, animated hero with dynamic profile picture and typewriter effect
-- About, Skills, Projects, Certificates, Testimonials, and Contact pages
-- Project and certificate detail modals with accent-matched themes
-- Contact form that saves messages to the database
-- Open Graph metadata with dynamic profile image for social sharing
-- Fully responsive across all devices
+### Public Site (3D Antigravity & Cyber-Void UI/UX)
+- **Floating Island Cyber-Pill Navbar** with ambient neon backlight and spring sliding indicator
+- **Asymmetric 3D Hero** with kinetic typography, magnetic CTAs, and orbital framed profile visual
+- **Symmetrical 2x2 Bento Matrix** for Featured Projects with live status tags and deep telemetry modal
+- **3D Gyroscopic TiltCards** with dynamic specular cursor spotlight gradients
+- **Magnetic Physics Buttons** with gravitational cursor attraction and zero-layout shift
+- **Kinetic Capabilities Radar** on Skills page with spring-animated domain filtering
+- **Holographic Experience Timeline** and Bento Metrics Grid on About page
+- **Verified Accreditations Gallery** on Certificates page with issue/expiry formatters
+- **Client Endorsement Carousel & Archive Grid** on Testimonials page
+- **Transmission Terminal** Contact Form saving directly to MongoDB
+- **Open Graph Metadata** with dynamic profile image for social sharing
+- **Zero Layout Shift (CLS 0)** optimized for 60-120 FPS performance
 
 ### Admin Dashboard (`/dashboard`)
 - Password-protected with JWT authentication and middleware route protection
